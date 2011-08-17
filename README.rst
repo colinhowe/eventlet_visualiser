@@ -2,6 +2,7 @@ Eventlet Visualiser
 ===================
 
 Author: Colin Howe (@colinhowe)
+
 License: Apache 2.0 license.
 
 Visualises eventlet greenlet execution to help with diagnosing what a system is

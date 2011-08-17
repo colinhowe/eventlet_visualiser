@@ -20,6 +20,7 @@ Tracing
 
 In the start of your program you need to patch eventlet to output trace to a
 file::
+
   from eventlet_visualiser.trace import patch_eventlet
   patch_eventlet(file('/tmp/eventlet.trace', 'w'))
 
@@ -30,6 +31,7 @@ Visualising
 ~~~~~~~~~~~
 
 After generating a trace file you can do::
+  
   python visualise.py < /tmp/eventlet.trace > /tmp/eventlet.html
 
 Now load that HTML file in a browser (I've only tried Chrome) to see what is 

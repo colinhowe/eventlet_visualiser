@@ -7,7 +7,29 @@ import eventlet.greenthread
 old_main = None
 out = None
 
+
+def patch_eventlet(_out):
+    '''Patches eventlet so that GreenThread will output trace to a file
+    when created and run.
+    '''
+    if hasattr(eventlet.greenthread.GreenThread, 'vpatched'):
+        return
+    eventlet.greenthread.GreenThread.vpatched = True
+
+    global out
+    out = _out
+
+    global old_main
+    old_main = eventlet.greenthread.GreenThread.main
+    eventlet.greenthread.GreenThread.main = new_main
+
+    global old_init
+    old_init = eventlet.greenthread.GreenThread.__init__
+    eventlet.greenthread.GreenThread.__init__ = new_init
+
 def new_main(self, *args):
+    '''Override for the main method for a GreenThread.
+    '''
     global old_main
     _id = id(self)
     try:
@@ -25,6 +47,8 @@ def new_main(self, *args):
         out.flush()
 
 def new_init(self, parent):
+    '''Overrides for the creation of a GreenThread.
+    '''
     global old_init
     _id = id(self)
     stack = traceback.format_stack()
@@ -35,19 +59,3 @@ def new_init(self, parent):
     ))
     old_init(self, parent)
 
-
-def patch_eventlet(_out):
-    if hasattr(eventlet.greenthread.GreenThread, 'vpatched'):
-        return
-    eventlet.greenthread.GreenThread.vpatched = True
-
-    global out
-    out = _out
-
-    global old_main
-    old_main = eventlet.greenthread.GreenThread.main
-    eventlet.greenthread.GreenThread.main = new_main
-
-    global old_init
-    old_init = eventlet.greenthread.GreenThread.__init__
-    eventlet.greenthread.GreenThread.__init__ = new_init

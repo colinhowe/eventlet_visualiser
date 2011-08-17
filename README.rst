@@ -8,6 +8,10 @@ License: Apache 2.0 license.
 Visualises eventlet greenlet execution to help with diagnosing what a system is
 doing.
 
+Example:
+.. image:: https://s3.amazonaws.com/colinhowe-colinhowe/eventlet.png
+   :scale: 50%
+
 Usage
 -----
 

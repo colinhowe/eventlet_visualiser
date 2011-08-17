@@ -1,16 +1,14 @@
 Eventlet Visualiser
 ===================
 
-Author: Colin Howe (@colinhowe)
+Author: Colin Howe (http://www.colinhowe.co.uk @colinhowe)
 
 License: Apache 2.0 license.
 
 Visualises eventlet greenlet execution to help with diagnosing what a system is
 doing.
 
-Example:
-.. image:: https://s3.amazonaws.com/colinhowe-colinhowe/eventlet.png
-   :scale: 50%
+Example: https://s3.amazonaws.com/colinhowe-colinhowe/eventlet.png
 
 Usage
 -----

@@ -58,7 +58,22 @@ class Visualiser(object):
 
     def go(self):
         # Print out necessary headers
-        print '<script type="text/javascript">stacks = {};</script>'
+        print """
+<head>
+<style>
+div {
+position: absolute;
+border: 1px solid white;
+}
+</style>
+</head>
+<script type="text/javascript">
+function c(fn, duration, args, stack) {
+    console.log('Fn: ' + fn + '\\nLength: ' + duration + 's\\nArgs: ' + args +
+                '\\nStack: ' + stack);
+}
+var stacks = {};
+</script>"""
 
         # Process chunks
         try:
@@ -160,14 +175,14 @@ class Visualiser(object):
             self.colours[greenlet['fn']] = colour
 
         fn = sanitise(str(greenlet['fn']))
-        duration = str(greenlet['end'] - greenlet['start'])
+        duration = "%.4f" % (greenlet['end'] - greenlet['start'])
         args = sanitise(greenlet['args'])
         stack = greenlet['stack']
         left = greenlet['x'] * 3 * self.ZOOM
-        top = self.ZOOM * (greenlet['start'] - self.start_timestamp) / self.SECS_PER_PX
+        top = "%.1f" % (self.ZOOM * (greenlet['start'] - self.start_timestamp) / self.SECS_PER_PX)
         height = self.ZOOM * max(1, (greenlet['end'] - greenlet['start']) / self.SECS_PER_PX) - 2
         width = 3 * self.ZOOM - 2
 
-        print '<div onclick="console.log(\'Fn: {fn}\\nLength: {duration}s\\nArgs: {args}\\nStack: \' + stacks[{stack}])" style="position: absolute; left: {left}px; top: {top}px; height: {height}px; width: {width}px; border: 1px solid white; background-color: {colour}"> </div>'.format(**locals())
+        print '<div onclick="c(\'{fn}\', \'{duration}\', \'{args}\', stacks[{stack}])" style="left: {left}px; top: {top}px; height: {height}px; width: {width}px; background-color: {colour}"> </div>'.format(**locals())
 
 Visualiser().go()

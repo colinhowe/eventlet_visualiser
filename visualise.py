@@ -68,12 +68,23 @@ border: 1px solid white;
 </style>
 </head>
 <script type="text/javascript">
-function c(fn, duration, args, stack) {
-    console.log('Fn: ' + fn + '\\nLength: ' + duration + 's\\nArgs: ' + args +
-                '\\nStack: ' + stack);
+function g(fn, duration, args, stack, left, top, height, width, colour) {
+    div = document.createElement('div');
+    div.style.width = width + 'px';
+    div.style.height = height + 'px';
+    div.style.top = top + 'px';
+    div.style.left = left + 'px';
+    div.style.backgroundColor = colour;
+    div.onclick = function() {
+        console.log('Fn: ' + fn + '\\nLength: ' + duration + 's\\nArgs: ' + args +
+                    '\\nStack: ' + stack);
+    };
+    document.body.appendChild(div);
 }
 var stacks = {};
-</script>"""
+
+window.onload = function() {
+"""
 
         # Process chunks
         try:
@@ -94,13 +105,15 @@ var stacks = {};
                 greenlet['fn'] = ''
             self.format_greenlet(greenlet)
 
+        print '};</script>'
+
         print '<div style="position: absolute; right: 100px; top: 0px; width: 150px; height: 100px;">%d concurrent eventlets</div>' % self.max_x
 
         # Print out a horizontal bar across the page to mark where the program ended
         print '<div style="position: absolute; left: 0px; top: %spx; height: 3px; width: %spx; border: 1px solid white; background-color: black"> </div>' % (
             self.ZOOM * (self.end_timestamp - self.start_timestamp) / self.SECS_PER_PX,
             self.ZOOM * self.max_x * 3,
-        ) 
+        )
 
     def read_chunk(self):
         '''Reads a chunk and stores it in greenlets. If no chunk was found
@@ -157,7 +170,7 @@ var stacks = {};
     def format_greenlet(self, greenlet):
         if greenlet['stack'] not in self.stack_traces:
             sanitised_stack = sanitise(greenlet['stack'])
-            print '<script type="text/javascript">stacks[%s] = \'%s\';</script>' % (
+            print 'stacks[%s] = \'%s\';' % (
                 len(self.stack_traces),
                 sanitised_stack
             )
@@ -183,6 +196,6 @@ var stacks = {};
         height = self.ZOOM * max(1, (greenlet['end'] - greenlet['start']) / self.SECS_PER_PX) - 2
         width = 3 * self.ZOOM - 2
 
-        print '<div onclick="c(\'{fn}\', \'{duration}\', \'{args}\', stacks[{stack}])" style="left: {left}px; top: {top}px; height: {height}px; width: {width}px; background-color: {colour}"> </div>'.format(**locals())
+        print 'g(\'{fn}\', \'{duration}\', \'{args}\', stacks[{stack}], {left}, {top}, {height}, {width}, \'{colour}\');'.format(**locals())
 
 Visualiser().go()

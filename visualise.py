@@ -42,6 +42,8 @@ class Visualiser(object):
     free_x = [] # points on the x-axis currently unused
     max_x = 0 # Maximum width seen so far
 
+    stack_traces = {} # Cache of stack traces to reduce size of output
+
     greenlets = {} # Greenlets currently being processed
     start_timestamp = None # Earliest timestamp
     end_timestamp = 0 # Oldest timestamp
@@ -55,6 +57,10 @@ class Visualiser(object):
         return sys.stdin.readline().strip()
 
     def go(self):
+        # Print out necessary headers
+        print '<script type="text/javascript">stacks = {};</script>'
+
+        # Process chunks
         try:
             while self.read_chunk(): pass
         except:
@@ -134,6 +140,15 @@ class Visualiser(object):
         return greenlet
 
     def format_greenlet(self, greenlet):
+        if greenlet['stack'] not in self.stack_traces:
+            sanitised_stack = sanitise(greenlet['stack'])
+            print '<script type="text/javascript">stacks[%s] = \'%s\';</script>' % (
+                len(self.stack_traces),
+                sanitised_stack
+            )
+            self.stack_traces[greenlet['stack']] = len(self.stack_traces)
+        greenlet['stack'] = self.stack_traces[greenlet['stack']]
+
         # Group greenlets by colour using the function they are calling
         if greenlet['fn'] in self.colours:
             colour = self.colours[greenlet['fn']]
@@ -147,12 +162,12 @@ class Visualiser(object):
         fn = sanitise(str(greenlet['fn']))
         duration = str(greenlet['end'] - greenlet['start'])
         args = sanitise(greenlet['args'])
-        stack = sanitise(greenlet['stack'])
+        stack = greenlet['stack']
         left = greenlet['x'] * 3 * self.ZOOM
         top = self.ZOOM * (greenlet['start'] - self.start_timestamp) / self.SECS_PER_PX
         height = self.ZOOM * max(1, (greenlet['end'] - greenlet['start']) / self.SECS_PER_PX) - 2
         width = 3 * self.ZOOM - 2
 
-        print '<div onclick="console.log(\'Fn: {fn}\\nLength: {duration}s\\nArgs: {args}\\nStack: {stack}\')" style="position: absolute; left: {left}px; top: {top}px; height: {height}px; width: {width}px; border: 1px solid white; background-color: {colour}"> </div>'.format(**locals())
+        print '<div onclick="console.log(\'Fn: {fn}\\nLength: {duration}s\\nArgs: {args}\\nStack: \' + stacks[{stack}])" style="position: absolute; left: {left}px; top: {top}px; height: {height}px; width: {width}px; border: 1px solid white; background-color: {colour}"> </div>'.format(**locals())
 
 Visualiser().go()

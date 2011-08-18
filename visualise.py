@@ -107,10 +107,10 @@ window.onload = function() {
 
         print '};</script>'
 
-        print '<div style="position: absolute; right: 100px; top: 0px; width: 150px; height: 100px;">%d concurrent eventlets</div>' % self.max_x
+        print '<div style="z-index: 1; position: absolute; right: 100px; top: 0px; width: 150px; height: 100px;">%d concurrent eventlets</div>' % self.max_x
 
         # Print out a horizontal bar across the page to mark where the program ended
-        print '<div style="position: absolute; left: 0px; top: %spx; height: 3px; width: %spx; border: 1px solid white; background-color: black"> </div>' % (
+        print '<div style="z-index: 1; position: absolute; left: 0px; top: %spx; height: 3px; width: %spx; border: 1px solid white; background-color: black"> </div>' % (
             self.ZOOM * (self.end_timestamp - self.start_timestamp) / self.SECS_PER_PX,
             self.ZOOM * self.max_x * 3,
         )
